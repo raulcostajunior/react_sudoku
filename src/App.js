@@ -9,14 +9,13 @@ function App() {
             <div className="row">
                 <div className="col s12 m8">
                     <div className="card-panel">
-                        <h5>Generator Panel</h5>
+                        <h6>Generator Panel</h6>
                     </div>
                 </div>
             </div>
             <div className="row">
                 <div className="col s12 m8">
                     <div className="card-panel">
-                        <h5>Board Panel</h5>
                         <table>
                             <tbody>
                                 <tr>
@@ -52,14 +51,14 @@ function App() {
                 </div>
                 <div className="col s12 m4">
                     <div className="card-panel">
-                        <h5>Solutions Panel</h5>
+                        <h6>Status Panel</h6>
                     </div>
                 </div>
             </div>
             <div className="row">
                 <div className="col s12 m8">
                     <div className="card-panel">
-                        <h5>Status Panel</h5>
+                        <h6>Solutions Panel</h6>
                     </div>
                 </div>
             </div>
