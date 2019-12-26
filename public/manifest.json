@@ -1,6 +1,6 @@
 {
-  "short_name": "React App",
-  "name": "Create React App Sample",
+  "short_name": "React Sudoku",
+  "name": "Demo web client for api_sudoku",
   "icons": [
     {
       "src": "favicon.ico",

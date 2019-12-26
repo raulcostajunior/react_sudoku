@@ -1,26 +1,70 @@
 import React from 'react';
-import logo from './logo.svg';
-import './App.css';
 
+// Important info:
+// https://www.garysnotebook.com/20190314_1 (How to use MaterializeCss JS with React)
+// https://codepen.io/cpett/pen/gmJygO (MaterializeCss scrollable tbody)
 function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+    return (
+        <div className="container">
+            <div className="row">
+                <div className="col s12 m8">
+                    <div className="card-panel">
+                        <h5>Generator Panel</h5>
+                    </div>
+                </div>
+            </div>
+            <div className="row">
+                <div className="col s12 m8">
+                    <div className="card-panel">
+                        <h5>Board Panel</h5>
+                        <table>
+                            <tbody>
+                                <tr>
+                                    <td>&nbsp;</td>
+                                </tr>
+                                <tr>
+                                    <td>&nbsp;</td>
+                                </tr>
+                                <tr>
+                                    <td>&nbsp;</td>
+                                </tr>
+                                <tr>
+                                    <td>&nbsp;</td>
+                                </tr>
+                                <tr>
+                                    <td>&nbsp;</td>
+                                </tr>
+                                <tr>
+                                    <td>&nbsp;</td>
+                                </tr>
+                                <tr>
+                                    <td>&nbsp;</td>
+                                </tr>
+                                <tr>
+                                    <td>&nbsp;</td>
+                                </tr>
+                                <tr>
+                                    <td>&nbsp;</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div className="col s12 m4">
+                    <div className="card-panel">
+                        <h5>Solutions Panel</h5>
+                    </div>
+                </div>
+            </div>
+            <div className="row">
+                <div className="col s12 m8">
+                    <div className="card-panel">
+                        <h5>Status Panel</h5>
+                    </div>
+                </div>
+            </div>
+        </div>
+    );
 }
 
 export default App;
