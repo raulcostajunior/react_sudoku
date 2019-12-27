@@ -8,14 +8,20 @@ function App() {
     return (
         <div className="container">
             <div className="row">
-                <div className="col s12 xl8 offset-xl2">
-                    <div className="card-panel">
-                        <h6>Generator Panel</h6>
-                    </div>
+                <div className="col s12">
+                    <h5>React Sudoku</h5>
                 </div>
             </div>
             <div className="row">
-                <div className="col s12 xl8 offset-xl2">
+                <div className="col s12">
+                    <div className="divider"></div>
+                </div>
+            </div>
+            <div className="row">
+                <div className="col s12 l8">
+                    <div className="section">
+                        <h6>Generator Panel</h6>
+                    </div>
                     <div className="card-panel">
                         <table>
                             <tbody>
@@ -47,20 +53,20 @@ function App() {
                                     <td>&nbsp;</td>
                                 </tr>
                             </tbody>
-                            <tfoot>
-                                <tr>
-                                    <td>Status: Empty</td>
-                                </tr>
-                            </tfoot>
                         </table>
                     </div>
+                    <p style={{color: 'gray'}}>Board Status: <b>Empty</b></p>
                 </div>
-            </div>
-            <div className="row">
-                <div className="col s12 xl8 offset-xl2">
-                    <div className="card-panel">
+                <div className="col s12 l4">
+                    <div className="section">
                         <h6>Solutions Panel</h6>
                     </div>
+                    <div className="card-panel">
+                        Solution #1
+                        </div>
+                    <div className="card-panel">
+                        Solution #2
+                        </div>
                 </div>
             </div>
         </div>
