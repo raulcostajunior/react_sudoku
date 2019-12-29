@@ -85,7 +85,7 @@ class App extends Component {
                         </div>
                         <div className="row">
                             <div className="col">
-                                <table style={{ fontSize: 'smaller' }}>
+                                <table style={{ fontSize: 'smaller', marginTop: '1em', marginBottom: '1em' }}>
                                     <tbody>
                                         <tr>
                                             <td style={{ padding: '8px', margin: '0', textAlign: 'center', border: '1px solid lightGray', borderTop: '2px solid gray', borderLeft: '2px solid gray', paddingTop: '1px', paddingBottom: '1px' }}>1</td>
@@ -189,10 +189,8 @@ class App extends Component {
                                     </tbody>
                                 </table>
                             </div>
-                        </div>
-                        <div className="row">
                             <div className="col">
-                                <table style={{ fontSize: 'smaller' }}>
+                                <table style={{ fontSize: 'smaller', marginTop: '1em', marginBottom: '1em' }}>
                                     <tbody>
                                         <tr>
                                             <td style={{ padding: '8px', margin: '0', textAlign: 'center', border: '1px solid lightGray', borderTop: '2px solid gray', borderLeft: '2px solid gray', paddingTop: '1px', paddingBottom: '1px' }}>1</td>
