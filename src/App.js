@@ -9,6 +9,27 @@ class App extends Component {
     constructor() {
         super();
         this.M = window.M;
+        this.state = {
+            board: {
+                focusRow: 0,
+                focusCol: 0,
+                values: Array(81).fill(0),
+                status: 'Empty'
+            },
+            genStatus: {
+                generating: false,
+                curStep: 0,
+                totalSteps: 0
+            },
+            solSearchStatus: {
+                searching: false,
+                progress: 0.0,
+                foundSoFar: 0,
+                solutions: [
+
+                ] // Array of values arrays
+            }
+        }
     }
 
     componentDidMount() {
@@ -30,9 +51,9 @@ class App extends Component {
                             <GenerationPanel />
                         </div>
                         <div>
-                            <Board />
+                            <Board board={this.state.board} />
                         </div>
-                        <p style={{ color: 'gray' }}>Board Status: <b>Empty</b></p>
+                        <p style={{ color: 'gray' }}>Board Status: <b>{this.state.board.status}</b></p>
                     </div>
                     <div className="col s12 l4 offset-l1">
                         <div className="row">
