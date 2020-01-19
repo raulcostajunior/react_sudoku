@@ -1,11 +1,23 @@
-import React from 'react';
+import React, { Component } from 'react';
 import './board.css';
 
-const Board = (props) => {
+class Board extends Component {
 
-    function elementAt(row, col) {
+    // TODO: focus board position on mouse down
+    // TODO: refactor focused className test into an
+
+    constructor() {
+        super();
+        this.state = {
+            focusCol: 0,
+            focusRow: 0,
+            isFocused: false
+        }
+    }
+
+    elementAt = (row, col) => {
         let pos = row * 9 + col;
-        let elem = props.board.values[pos];
+        let elem = this.props.board.values[pos];
         if (elem === 0) {
             return (<div>&nbsp;</div>);
         } else {
@@ -13,276 +25,337 @@ const Board = (props) => {
         }
     }
 
-    return (
+    onFocus = () => {
+        this.setState ({
+            focusCol: this.state.focusCol,
+            focusRow: this.state.focusRow,
+            isFocused: true
+        });
+    }
 
-        <div className="board">
-            <table style={{ fontSize: 'larger', marginTop: '1em', marginBottom: '1em' }}>
-                <tbody>
-                    <tr>
-                        <td className={`left-border top-border ${props.board.focusRow === 0 && props.board.focusCol === 0 ? 'focused' : ''}`}>
-                            {elementAt(0, 0)}
-                        </td>
-                        <td className={`top-border ${props.board.focusRow === 0 && props.board.focusCol === 1 ? 'focused' : ''}`}>
-                            {elementAt(0, 1)}
-                        </td>
-                        <td className={`top-border right-border ${props.board.focusRow === 0 && props.board.focusCol === 2 ? 'focused' : ''}`}>
-                            {elementAt(0, 2)}
-                        </td>
-                        <td className={`top-border left-border ${props.board.focusRow === 0 && props.board.focusCol === 3 ? 'focused' : ''}`}>
-                            {elementAt(0, 3)}
-                        </td>
-                        <td className={`top-border ${props.board.focusRow === 0 && props.board.focusCol === 4 ? 'focused' : ''}`}>
-                            {elementAt(0, 4)}
-                        </td>
-                        <td className={`top-border right-border ${props.board.focusRow === 0 && props.board.focusCol === 5 ? 'focused' : ''}`}>
-                            {elementAt(0, 5)}
-                        </td>
-                        <td className={`left-border top-border ${props.board.focusRow === 0 && props.board.focusCol === 6 ? 'focused' : ''}`}>
-                            {elementAt(0,6)}
-                        </td>
-                        <td className={`top-border ${props.board.focusRow === 0 && props.board.focusCol === 7 ? 'focused' : ''}`}>
-                            {elementAt(0,7)}
-                        </td>
-                        <td className={`top-border right-border ${props.board.focusRow === 0 && props.board.focusCol === 8 ? 'focused' : ''}`}>
-                            {elementAt(0,8)}
-                        </td>
-                    </tr>
-                    <tr>
-                        <td className={`left-border ${props.board.focusRow === 1 && props.board.focusCol === 0 ? 'focused' : ''}`}>
-                            {elementAt(1,0)}
-                        </td>
-                        <td className={`${props.board.focusRow === 1 && props.board.focusCol === 1 ? 'focused' : ''}`}>
-                            {elementAt(1,1)}
-                        </td>
-                        <td className={`right-border ${props.board.focusRow === 1 && props.board.focusCol === 2 ? 'focused' : ''}`}>
-                            {elementAt(1,2)}
-                        </td>
-                        <td className={`left-border ${props.board.focusRow === 1 && props.board.focusCol === 3 ? 'focused' : ''}`}>
-                            {elementAt(1,3)}
-                        </td>
-                        <td className={`${props.board.focusRow === 1 && props.board.focusCol === 4 ? 'focused' : ''}`}>
-                            {elementAt(1,4)}
-                        </td>
-                        <td className={`right-border ${props.board.focusRow === 1 && props.board.focusCol === 5 ? 'focused' : ''}`}>
-                            {elementAt(1,5)}
-                        </td>
-                        <td className={`left-border ${props.board.focusRow === 1 && props.board.focusCol === 6 ? 'focused' : ''}`}>
-                            {elementAt(1,6)}
-                        </td>
-                        <td className={`${props.board.focusRow === 1 && props.board.focusCol === 7 ? 'focused' : ''}`}>
-                            {elementAt(1,7)}
-                        </td>
-                        <td className={`right-border ${props.board.focusRow === 1 && props.board.focusCol === 8 ? 'focused' : ''}`}>
-                            {elementAt(1,8)}
-                        </td>
-                    </tr>
-                    <tr>
-                        <td className={`left-border bottom-border ${props.board.focusRow === 2 && props.board.focusCol === 0 ? 'focused' : ''}`}>
-                            {elementAt(2,0)}
-                        </td>
-                        <td className={`bottom-border ${props.board.focusRow === 2 && props.board.focusCol === 1 ? 'focused' : ''}`}>
-                            {elementAt(2,1)}
-                        </td>
-                        <td className={`bottom-border right-border ${props.board.focusRow === 2 && props.board.focusCol === 2 ? 'focused' : ''}`}>
-                            {elementAt(2,2)}
-                        </td>
-                        <td className={`bottom-border left-border ${props.board.focusRow === 2 && props.board.focusCol === 3 ? 'focused' : ''}`}>
-                            {elementAt(2,3)}
-                        </td>
-                        <td className={`bottom-border ${props.board.focusRow === 2 && props.board.focusCol === 4 ? 'focused' : ''}`}>
-                            {elementAt(2,4)}
-                        </td>
-                        <td className={`bottom-border right-border ${props.board.focusRow === 2 && props.board.focusCol === 5 ? 'focused' : ''}`}>
-                            {elementAt(2,5)}
-                        </td>
-                        <td className={`left-border bottom-border ${props.board.focusRow === 2 && props.board.focusCol === 6 ? 'focused' : ''}`}>
-                            {elementAt(2,6)}
-                        </td>
-                        <td className={`bottom-border ${props.board.focusRow === 2 && props.board.focusCol === 7 ? 'focused' : ''}`}>
-                            {elementAt(2,7)}
-                        </td>
-                        <td className={`bottom-border right-border ${props.board.focusRow === 2 && props.board.focusCol === 8 ? 'focused' : ''}`}>
-                            {elementAt(2,8)}
-                        </td>
-                    </tr>
-                    <tr>
-                        <td className={`left-border top-border ${props.board.focusRow === 3 && props.board.focusCol === 0 ? 'focused' : ''}`}>
-                            {elementAt(3,0)}
-                        </td>
-                        <td className={`top-border ${props.board.focusRow === 3 && props.board.focusCol === 1 ? 'focused' : ''}`}>
-                            {elementAt(3,1)}
-                        </td>
-                        <td className={`top-border right-border ${props.board.focusRow === 3 && props.board.focusCol === 2 ? 'focused' : ''}`}>
-                            {elementAt(3,2)}
-                        </td>
-                        <td className={`top-border left-border ${props.board.focusRow === 3 && props.board.focusCol === 3 ? 'focused' : ''}`}>
-                            {elementAt(3,3)}
-                        </td>
-                        <td className={`top-border ${props.board.focusRow === 3 && props.board.focusCol === 4 ? 'focused' : ''}`}>
-                            {elementAt(3,4)}
-                        </td>
-                        <td className={`top-border right-border ${props.board.focusRow === 3 && props.board.focusCol === 5 ? 'focused' : ''}`}>
-                            {elementAt(3,5)}
-                        </td>
-                        <td className={`left-border top-border ${props.board.focusRow === 3 && props.board.focusCol === 6 ? 'focused' : ''}`}>
-                            {elementAt(3,6)}
-                        </td>
-                        <td className={`top-border ${props.board.focusRow === 3 && props.board.focusCol === 7 ? 'focused' : ''}`}>
-                            {elementAt(3,7)}
-                        </td>
-                        <td className={`top-border right-border ${props.board.focusRow === 3 && props.board.focusCol === 8 ? 'focused' : ''}`}>
-                            {elementAt(3,8)}
-                        </td>
-                    </tr>
-                    <tr>
-                        <td className={`left-border ${props.board.focusRow === 4 && props.board.focusCol === 0 ? 'focused' : ''}`}>
-                            {elementAt(4,0)}
-                        </td>
-                        <td className={`${props.board.focusRow === 4 && props.board.focusCol === 1 ? 'focused' : ''}`}>
-                            {elementAt(4,1)}
-                        </td>
-                        <td className={`right-border ${props.board.focusRow === 4 && props.board.focusCol === 2 ? 'focused' : ''}`}>
-                            {elementAt(4,2)}
-                        </td>
-                        <td className={`left-border ${props.board.focusRow === 4 && props.board.focusCol === 3 ? 'focused' : ''}`}>
-                            {elementAt(4,3)}
-                        </td>
-                        <td className={`${props.board.focusRow === 4 && props.board.focusCol === 4 ? 'focused' : ''}`}>
-                            {elementAt(4,4)}
-                        </td>
-                        <td className={`right-border ${props.board.focusRow === 4 && props.board.focusCol === 5 ? 'focused' : ''}`}>
-                            {elementAt(4,5)}
-                        </td>
-                        <td className={`left-border ${props.board.focusRow === 4 && props.board.focusCol === 6 ? 'focused' : ''}`}>
-                            {elementAt(4,6)}
-                        </td>
-                        <td className={`${props.board.focusRow === 4 && props.board.focusCol === 7 ? 'focused' : ''}`}>
-                            {elementAt(4,7)}
-                        </td>
-                        <td className={`right-border ${props.board.focusRow === 4 && props.board.focusCol === 8 ? 'focused' : ''}`}>
-                            {elementAt(4,8)}
-                        </td>
-                    </tr>
-                    <tr>
-                        <td className={`left-border bottom-border ${props.board.focusRow === 5 && props.board.focusCol === 0 ? 'focused' : ''}`}>
-                            {elementAt(5,0)}
-                        </td>
-                        <td className={`bottom-border ${props.board.focusRow === 5 && props.board.focusCol === 1 ? 'focused' : ''}`}>
-                            {elementAt(5,1)}
-                        </td>
-                        <td className={`bottom-border right-border ${props.board.focusRow === 5 && props.board.focusCol === 2 ? 'focused' : ''}`}>
-                            {elementAt(5,2)}
-                        </td>
-                        <td className={`bottom-border left-border ${props.board.focusRow === 5 && props.board.focusCol === 3 ? 'focused' : ''}`}>
-                            {elementAt(5,3)}
-                        </td>
-                        <td className={`bottom-border ${props.board.focusRow === 5 && props.board.focusCol === 4 ? 'focused' : ''}`}>
-                            {elementAt(5,4)}
-                        </td>
-                        <td className={`bottom-border right-border ${props.board.focusRow === 5 && props.board.focusCol === 5 ? 'focused' : ''}`}>
-                            {elementAt(5,5)}
-                        </td>
-                        <td className={`left-border bottom-border ${props.board.focusRow === 5 && props.board.focusCol === 6 ? 'focused' : ''}`}>
-                            {elementAt(5,6)}
-                        </td>
-                        <td className={`bottom-border ${props.board.focusRow === 5 && props.board.focusCol === 7 ? 'focused' : ''}`}>
-                            {elementAt(5,7)}
-                        </td>
-                        <td className={`bottom-border right-border ${props.board.focusRow === 5 && props.board.focusCol === 8 ? 'focused' : ''}`}>
-                            {elementAt(5,8)}
-                        </td>
-                    </tr>
-                    <tr>
-                        <td className={`left-border top-border ${props.board.focusRow === 6 && props.board.focusCol === 0 ? 'focused' : ''}`}>
-                            {elementAt(6,0)}
-                        </td>
-                        <td className={`top-border ${props.board.focusRow === 6 && props.board.focusCol === 1 ? 'focused' : ''}`}>
-                            {elementAt(6,1)}
-                        </td>
-                        <td className={`top-border right-border ${props.board.focusRow === 6 && props.board.focusCol === 2 ? 'focused' : ''}`}>
-                            {elementAt(6,2)}
-                        </td>
-                        <td className={`top-border left-border ${props.board.focusRow === 6 && props.board.focusCol === 3 ? 'focused' : ''}`}>
-                            {elementAt(6,3)}
-                        </td>
-                        <td className={`top-border ${props.board.focusRow === 6 && props.board.focusCol === 4 ? 'focused' : ''}`}>
-                            {elementAt(6,4)}
-                        </td>
-                        <td className={`top-border right-border ${props.board.focusRow === 6 && props.board.focusCol === 5 ? 'focused' : ''}`}>
-                            {elementAt(6,5)}
-                        </td>
-                        <td className={`left-border top-border ${props.board.focusRow === 6 && props.board.focusCol === 6 ? 'focused' : ''}`}>
-                            {elementAt(6,6)}
-                        </td>
-                        <td className={`top-border ${props.board.focusRow === 6 && props.board.focusCol === 7 ? 'focused' : ''}`}>
-                            {elementAt(6,7)}
-                        </td>
-                        <td className={`top-border right-border ${props.board.focusRow === 6 && props.board.focusCol === 8 ? 'focused' : ''}`}>
-                            {elementAt(7,7)}
-                        </td>
-                    </tr>
-                    <tr>
-                        <td className={`left-border ${props.board.focusRow === 7 && props.board.focusCol === 0 ? 'focused' : ''}`}>
-                            {elementAt(7,0)}
-                        </td>
-                        <td className={`${props.board.focusRow === 7 && props.board.focusCol === 1 ? 'focused' : ''}`}>
-                            {elementAt(7,1)}
-                        </td>
-                        <td className={`right-border ${props.board.focusRow === 7 && props.board.focusCol === 2 ? 'focused' : ''}`}>
-                            {elementAt(7,2)}
-                        </td>
-                        <td className={`left-border ${props.board.focusRow === 7 && props.board.focusCol === 3 ? 'focused' : ''}`}>
-                            {elementAt(7,3)}
-                        </td>
-                        <td className={`${props.board.focusRow === 7 && props.board.focusCol === 4 ? 'focused' : ''}`}>
-                            {elementAt(7,4)}
-                        </td>
-                        <td className={`right-border ${props.board.focusRow === 7 && props.board.focusCol === 5 ? 'focused' : ''}`}>
-                            {elementAt(7,5)}
-                        </td>
-                        <td className={`left-border ${props.board.focusRow === 7 && props.board.focusCol === 6 ? 'focused' : ''}`}>
-                            {elementAt(7,6)}
-                        </td>
-                        <td className={`${props.board.focusRow === 7 && props.board.focusCol === 7 ? 'focused' : ''}`}>
-                            {elementAt(7,7)}
-                        </td>
-                        <td className={`right-border ${props.board.focusRow === 7 && props.board.focusCol === 8 ? 'focused' : ''}`}>
-                            {elementAt(7,8)}
-                        </td>
-                    </tr>
-                    <tr>
-                        <td className={`left-border bottom-border ${props.board.focusRow === 8 && props.board.focusCol === 0 ? 'focused' : ''}`}>
-                            {elementAt(8,0)}
-                        </td>
-                        <td className={`bottom-border ${props.board.focusRow === 8 && props.board.focusCol === 1 ? 'focused' : ''}`}>
-                            {elementAt(8,1)}
-                        </td>
-                        <td className={`bottom-border right-border ${props.board.focusRow === 8 && props.board.focusCol === 2 ? 'focused' : ''}`}>
-                            {elementAt(8,2)}
-                        </td>
-                        <td className={`bottom-border left-border ${props.board.focusRow === 8 && props.board.focusCol === 3 ? 'focused' : ''}`}>
-                            {elementAt(8,3)}
-                        </td>
-                        <td className={`bottom-border ${props.board.focusRow === 8 && props.board.focusCol === 4 ? 'focused' : ''}`}>
-                            {elementAt(8,4)}
-                        </td>
-                        <td className={`bottom-border right-border ${props.board.focusRow === 8 && props.board.focusCol === 5 ? 'focused' : ''}`}>
-                            {elementAt(8,5)}
-                        </td>
-                        <td className={`left-border bottom-border ${props.board.focusRow === 8 && props.board.focusCol === 6 ? 'focused' : ''}`}>
-                            {elementAt(8,6)}
-                        </td>
-                        <td className={`bottom-border ${props.board.focusRow === 8 && props.board.focusCol === 7 ? 'focused' : ''}`}>
-                            {elementAt(8,7)}
-                        </td>
-                        <td className={`bottom-border right-border ${props.board.focusRow === 8 && props.board.focusCol === 8 ? 'focused' : ''}`}>
-                            {elementAt(8,8)}
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-    )
+    onBlur = () => {
+        this.setState ({
+            focusCol: this.state.focusCol,
+            focusRow: this.state.focusRow,
+            isFocused: false
+        });
+    }
+
+    onKeyDown = (evt) => {
+        evt.preventDefault();
+        if (evt.keyCode >= 48 && evt.keyCode <= 57) {
+            // User pressed a digit between 0 and 9 - sets the value at the board position
+            if (this.props.onValueSet) {
+                this.props.onValueSet(this.state.focusRow, this.state.focusCol, evt.keyCode - 48);
+            }
+        } else if (evt.keyCode === 37) {
+            // User pressed ArrowLeft
+            let newFocusCol = Math.max(0, this.state.focusCol - 1);
+            this.setState({
+                focusCol: newFocusCol,
+                focusRow: this.state.focusRow
+            });
+        } else if (evt.keyCode === 38) {
+            // User pressed ArrowUp
+            let newFocusRow = Math.max(0, this.state.focusRow - 1);
+            this.setState({
+                focusCol: this.state.focusCol,
+                focusRow: newFocusRow
+            });
+        } else if (evt.keyCode === 39) {
+            // User pressed ArrowRight
+            let newFocusCol = Math.min(8, this.state.focusCol + 1);
+            this.setState({
+                focusCol: newFocusCol,
+                focusRow: this.state.focusRow
+            });
+        } else if (evt.keyCode === 40) {
+            // User pressed ArrowDown
+            let newFocusRow = Math.min(8, this.state.focusRow + 1);
+            this.setState({
+                focusCol: this.state.focusCol,
+                focusRow: newFocusRow
+            });
+        } else if (evt.keyCode === 8) {
+            // User pressed Delete
+            if (this.props.onValueSet) {
+                this.props.onValueSet(this.state.focusRow, this.state.focusCol, 0);
+            }
+        }
+    }
+
+    render() {
+
+        return (
+            <div className="board" tabIndex="0" onKeyDown={this.onKeyDown} onFocus={this.onFocus} onBlur={this.onBlur}>
+                <table style={{ fontSize: 'larger', marginTop: '1em', marginBottom: '1em' }}>
+                    <tbody>
+                        <tr>
+                            <td className={`left-border top-border ${this.state.isFocused && this.state.focusRow === 0 && this.state.focusCol === 0 ? 'focused' : ''}`}>
+                                {this.elementAt(0, 0)}
+                            </td>
+                            <td className={`top-border ${this.state.isFocused && this.state.focusRow === 0 && this.state.focusCol === 1 ? 'focused' : ''}`}>
+                                {this.elementAt(0, 1)}
+                            </td>
+                            <td className={`top-border right-border ${this.state.isFocused && this.state.focusRow === 0 && this.state.focusCol === 2 ? 'focused' : ''}`}>
+                                {this.elementAt(0, 2)}
+                            </td>
+                            <td className={`top-border left-border ${this.state.isFocused && this.state.focusRow === 0 && this.state.focusCol === 3 ? 'focused' : ''}`}>
+                                {this.elementAt(0, 3)}
+                            </td>
+                            <td className={`top-border ${this.state.isFocused && this.state.focusRow === 0 && this.state.focusCol === 4 ? 'focused' : ''}`}>
+                                {this.elementAt(0, 4)}
+                            </td>
+                            <td className={`top-border right-border ${this.state.isFocused && this.state.focusRow === 0 && this.state.focusCol === 5 ? 'focused' : ''}`}>
+                                {this.elementAt(0, 5)}
+                            </td>
+                            <td className={`left-border top-border ${this.state.isFocused && this.state.focusRow === 0 && this.state.focusCol === 6 ? 'focused' : ''}`}>
+                                {this.elementAt(0, 6)}
+                            </td>
+                            <td className={`top-border ${this.state.isFocused && this.state.focusRow === 0 && this.state.focusCol === 7 ? 'focused' : ''}`}>
+                                {this.elementAt(0, 7)}
+                            </td>
+                            <td className={`top-border right-border ${this.state.isFocused && this.state.focusRow === 0 && this.state.focusCol === 8 ? 'focused' : ''}`}>
+                                {this.elementAt(0, 8)}
+                            </td>
+                        </tr>
+                        <tr>
+                            <td className={`left-border ${this.state.isFocused && this.state.focusRow === 1 && this.state.focusCol === 0 ? 'focused' : ''}`}>
+                                {this.elementAt(1, 0)}
+                            </td>
+                            <td className={`${this.state.isFocused && this.state.focusRow === 1 && this.state.focusCol === 1 ? 'focused' : ''}`}>
+                                {this.elementAt(1, 1)}
+                            </td>
+                            <td className={`right-border ${this.state.isFocused && this.state.focusRow === 1 && this.state.focusCol === 2 ? 'focused' : ''}`}>
+                                {this.elementAt(1, 2)}
+                            </td>
+                            <td className={`left-border ${this.state.isFocused && this.state.focusRow === 1 && this.state.focusCol === 3 ? 'focused' : ''}`}>
+                                {this.elementAt(1, 3)}
+                            </td>
+                            <td className={`${this.state.isFocused && this.state.focusRow === 1 && this.state.focusCol === 4 ? 'focused' : ''}`}>
+                                {this.elementAt(1, 4)}
+                            </td>
+                            <td className={`right-border ${this.state.isFocused && this.state.focusRow === 1 && this.state.focusCol === 5 ? 'focused' : ''}`}>
+                                {this.elementAt(1, 5)}
+                            </td>
+                            <td className={`left-border ${this.state.isFocused && this.state.focusRow === 1 && this.state.focusCol === 6 ? 'focused' : ''}`}>
+                                {this.elementAt(1, 6)}
+                            </td>
+                            <td className={`${this.state.isFocused && this.state.focusRow === 1 && this.state.focusCol === 7 ? 'focused' : ''}`}>
+                                {this.elementAt(1, 7)}
+                            </td>
+                            <td className={`right-border ${this.state.isFocused && this.state.focusRow === 1 && this.state.focusCol === 8 ? 'focused' : ''}`}>
+                                {this.elementAt(1, 8)}
+                            </td>
+                        </tr>
+                        <tr>
+                            <td className={`left-border bottom-border ${this.state.isFocused && this.state.focusRow === 2 && this.state.focusCol === 0 ? 'focused' : ''}`}>
+                                {this.elementAt(2, 0)}
+                            </td>
+                            <td className={`bottom-border ${this.state.isFocused && this.state.focusRow === 2 && this.state.focusCol === 1 ? 'focused' : ''}`}>
+                                {this.elementAt(2, 1)}
+                            </td>
+                            <td className={`bottom-border right-border ${this.state.isFocused && this.state.focusRow === 2 && this.state.focusCol === 2 ? 'focused' : ''}`}>
+                                {this.elementAt(2, 2)}
+                            </td>
+                            <td className={`bottom-border left-border ${this.state.isFocused && this.state.focusRow === 2 && this.state.focusCol === 3 ? 'focused' : ''}`}>
+                                {this.elementAt(2, 3)}
+                            </td>
+                            <td className={`bottom-border ${this.state.isFocused && this.state.focusRow === 2 && this.state.focusCol === 4 ? 'focused' : ''}`}>
+                                {this.elementAt(2, 4)}
+                            </td>
+                            <td className={`bottom-border right-border ${this.state.isFocused && this.state.focusRow === 2 && this.state.focusCol === 5 ? 'focused' : ''}`}>
+                                {this.elementAt(2, 5)}
+                            </td>
+                            <td className={`left-border bottom-border ${this.state.isFocused && this.state.focusRow === 2 && this.state.focusCol === 6 ? 'focused' : ''}`}>
+                                {this.elementAt(2, 6)}
+                            </td>
+                            <td className={`bottom-border ${this.state.isFocused && this.state.focusRow === 2 && this.state.focusCol === 7 ? 'focused' : ''}`}>
+                                {this.elementAt(2, 7)}
+                            </td>
+                            <td className={`bottom-border right-border ${this.state.isFocused && this.state.focusRow === 2 && this.state.focusCol === 8 ? 'focused' : ''}`}>
+                                {this.elementAt(2, 8)}
+                            </td>
+                        </tr>
+                        <tr>
+                            <td className={`left-border top-border ${this.state.isFocused && this.state.focusRow === 3 && this.state.focusCol === 0 ? 'focused' : ''}`}>
+                                {this.elementAt(3, 0)}
+                            </td>
+                            <td className={`top-border ${this.state.isFocused && this.state.focusRow === 3 && this.state.focusCol === 1 ? 'focused' : ''}`}>
+                                {this.elementAt(3, 1)}
+                            </td>
+                            <td className={`top-border right-border ${this.state.isFocused && this.state.focusRow === 3 && this.state.focusCol === 2 ? 'focused' : ''}`}>
+                                {this.elementAt(3, 2)}
+                            </td>
+                            <td className={`top-border left-border ${this.state.isFocused && this.state.focusRow === 3 && this.state.focusCol === 3 ? 'focused' : ''}`}>
+                                {this.elementAt(3, 3)}
+                            </td>
+                            <td className={`top-border ${this.state.isFocused && this.state.focusRow === 3 && this.state.focusCol === 4 ? 'focused' : ''}`}>
+                                {this.elementAt(3, 4)}
+                            </td>
+                            <td className={`top-border right-border ${this.state.isFocused && this.state.focusRow === 3 && this.state.focusCol === 5 ? 'focused' : ''}`}>
+                                {this.elementAt(3, 5)}
+                            </td>
+                            <td className={`left-border top-border ${this.state.isFocused && this.state.focusRow === 3 && this.state.focusCol === 6 ? 'focused' : ''}`}>
+                                {this.elementAt(3, 6)}
+                            </td>
+                            <td className={`top-border ${this.state.isFocused && this.state.focusRow === 3 && this.state.focusCol === 7 ? 'focused' : ''}`}>
+                                {this.elementAt(3, 7)}
+                            </td>
+                            <td className={`top-border right-border ${this.state.isFocused && this.state.focusRow === 3 && this.state.focusCol === 8 ? 'focused' : ''}`}>
+                                {this.elementAt(3, 8)}
+                            </td>
+                        </tr>
+                        <tr>
+                            <td className={`left-border ${this.state.isFocused && this.state.focusRow === 4 && this.state.focusCol === 0 ? 'focused' : ''}`}>
+                                {this.elementAt(4, 0)}
+                            </td>
+                            <td className={`${this.state.isFocused && this.state.focusRow === 4 && this.state.focusCol === 1 ? 'focused' : ''}`}>
+                                {this.elementAt(4, 1)}
+                            </td>
+                            <td className={`right-border ${this.state.isFocused && this.state.focusRow === 4 && this.state.focusCol === 2 ? 'focused' : ''}`}>
+                                {this.elementAt(4, 2)}
+                            </td>
+                            <td className={`left-border ${this.state.isFocused && this.state.focusRow === 4 && this.state.focusCol === 3 ? 'focused' : ''}`}>
+                                {this.elementAt(4, 3)}
+                            </td>
+                            <td className={`${this.state.isFocused && this.state.focusRow === 4 && this.state.focusCol === 4 ? 'focused' : ''}`}>
+                                {this.elementAt(4, 4)}
+                            </td>
+                            <td className={`right-border ${this.state.isFocused && this.state.focusRow === 4 && this.state.focusCol === 5 ? 'focused' : ''}`}>
+                                {this.elementAt(4, 5)}
+                            </td>
+                            <td className={`left-border ${this.state.isFocused && this.state.focusRow === 4 && this.state.focusCol === 6 ? 'focused' : ''}`}>
+                                {this.elementAt(4, 6)}
+                            </td>
+                            <td className={`${this.state.isFocused && this.state.focusRow === 4 && this.state.focusCol === 7 ? 'focused' : ''}`}>
+                                {this.elementAt(4, 7)}
+                            </td>
+                            <td className={`right-border ${this.state.isFocused && this.state.focusRow === 4 && this.state.focusCol === 8 ? 'focused' : ''}`}>
+                                {this.elementAt(4, 8)}
+                            </td>
+                        </tr>
+                        <tr>
+                            <td className={`left-border bottom-border ${this.state.isFocused && this.state.focusRow === 5 && this.state.focusCol === 0 ? 'focused' : ''}`}>
+                                {this.elementAt(5, 0)}
+                            </td>
+                            <td className={`bottom-border ${this.state.isFocused && this.state.focusRow === 5 && this.state.focusCol === 1 ? 'focused' : ''}`}>
+                                {this.elementAt(5, 1)}
+                            </td>
+                            <td className={`bottom-border right-border ${this.state.isFocused && this.state.focusRow === 5 && this.state.focusCol === 2 ? 'focused' : ''}`}>
+                                {this.elementAt(5, 2)}
+                            </td>
+                            <td className={`bottom-border left-border ${this.state.isFocused && this.state.focusRow === 5 && this.state.focusCol === 3 ? 'focused' : ''}`}>
+                                {this.elementAt(5, 3)}
+                            </td>
+                            <td className={`bottom-border ${this.state.isFocused && this.state.focusRow === 5 && this.state.focusCol === 4 ? 'focused' : ''}`}>
+                                {this.elementAt(5, 4)}
+                            </td>
+                            <td className={`bottom-border right-border ${this.state.isFocused && this.state.focusRow === 5 && this.state.focusCol === 5 ? 'focused' : ''}`}>
+                                {this.elementAt(5, 5)}
+                            </td>
+                            <td className={`left-border bottom-border ${this.state.isFocused && this.state.focusRow === 5 && this.state.focusCol === 6 ? 'focused' : ''}`}>
+                                {this.elementAt(5, 6)}
+                            </td>
+                            <td className={`bottom-border ${this.state.isFocused && this.state.focusRow === 5 && this.state.focusCol === 7 ? 'focused' : ''}`}>
+                                {this.elementAt(5, 7)}
+                            </td>
+                            <td className={`bottom-border right-border ${this.state.isFocused && this.state.focusRow === 5 && this.state.focusCol === 8 ? 'focused' : ''}`}>
+                                {this.elementAt(5, 8)}
+                            </td>
+                        </tr>
+                        <tr>
+                            <td className={`left-border top-border ${this.state.isFocused && this.state.focusRow === 6 && this.state.focusCol === 0 ? 'focused' : ''}`}>
+                                {this.elementAt(6, 0)}
+                            </td>
+                            <td className={`top-border ${this.state.isFocused && this.state.focusRow === 6 && this.state.focusCol === 1 ? 'focused' : ''}`}>
+                                {this.elementAt(6, 1)}
+                            </td>
+                            <td className={`top-border right-border ${this.state.isFocused && this.state.focusRow === 6 && this.state.focusCol === 2 ? 'focused' : ''}`}>
+                                {this.elementAt(6, 2)}
+                            </td>
+                            <td className={`top-border left-border ${this.state.isFocused && this.state.focusRow === 6 && this.state.focusCol === 3 ? 'focused' : ''}`}>
+                                {this.elementAt(6, 3)}
+                            </td>
+                            <td className={`top-border ${this.state.isFocused && this.state.focusRow === 6 && this.state.focusCol === 4 ? 'focused' : ''}`}>
+                                {this.elementAt(6, 4)}
+                            </td>
+                            <td className={`top-border right-border ${this.state.isFocused && this.state.focusRow === 6 && this.state.focusCol === 5 ? 'focused' : ''}`}>
+                                {this.elementAt(6, 5)}
+                            </td>
+                            <td className={`left-border top-border ${this.state.isFocused && this.state.focusRow === 6 && this.state.focusCol === 6 ? 'focused' : ''}`}>
+                                {this.elementAt(6, 6)}
+                            </td>
+                            <td className={`top-border ${this.state.isFocused && this.state.focusRow === 6 && this.state.focusCol === 7 ? 'focused' : ''}`}>
+                                {this.elementAt(6, 7)}
+                            </td>
+                            <td className={`top-border right-border ${this.state.isFocused && this.state.focusRow === 6 && this.state.focusCol === 8 ? 'focused' : ''}`}>
+                                {this.elementAt(7, 7)}
+                            </td>
+                        </tr>
+                        <tr>
+                            <td className={`left-border ${this.state.isFocused && this.state.focusRow === 7 && this.state.focusCol === 0 ? 'focused' : ''}`}>
+                                {this.elementAt(7, 0)}
+                            </td>
+                            <td className={`${this.state.isFocused && this.state.focusRow === 7 && this.state.focusCol === 1 ? 'focused' : ''}`}>
+                                {this.elementAt(7, 1)}
+                            </td>
+                            <td className={`right-border ${this.state.isFocused && this.state.focusRow === 7 && this.state.focusCol === 2 ? 'focused' : ''}`}>
+                                {this.elementAt(7, 2)}
+                            </td>
+                            <td className={`left-border ${this.state.isFocused && this.state.focusRow === 7 && this.state.focusCol === 3 ? 'focused' : ''}`}>
+                                {this.elementAt(7, 3)}
+                            </td>
+                            <td className={`${this.state.isFocused && this.state.focusRow === 7 && this.state.focusCol === 4 ? 'focused' : ''}`}>
+                                {this.elementAt(7, 4)}
+                            </td>
+                            <td className={`right-border ${this.state.isFocused && this.state.focusRow === 7 && this.state.focusCol === 5 ? 'focused' : ''}`}>
+                                {this.elementAt(7, 5)}
+                            </td>
+                            <td className={`left-border ${this.state.isFocused && this.state.focusRow === 7 && this.state.focusCol === 6 ? 'focused' : ''}`}>
+                                {this.elementAt(7, 6)}
+                            </td>
+                            <td className={`${this.state.isFocused && this.state.focusRow === 7 && this.state.focusCol === 7 ? 'focused' : ''}`}>
+                                {this.elementAt(7, 7)}
+                            </td>
+                            <td className={`right-border ${this.state.isFocused && this.state.focusRow === 7 && this.state.focusCol === 8 ? 'focused' : ''}`}>
+                                {this.elementAt(7, 8)}
+                            </td>
+                        </tr>
+                        <tr>
+                            <td className={`left-border bottom-border ${this.state.isFocused && this.state.focusRow === 8 && this.state.focusCol === 0 ? 'focused' : ''}`}>
+                                {this.elementAt(8, 0)}
+                            </td>
+                            <td className={`bottom-border ${this.state.isFocused && this.state.focusRow === 8 && this.state.focusCol === 1 ? 'focused' : ''}`}>
+                                {this.elementAt(8, 1)}
+                            </td>
+                            <td className={`bottom-border right-border ${this.state.isFocused && this.state.focusRow === 8 && this.state.focusCol === 2 ? 'focused' : ''}`}>
+                                {this.elementAt(8, 2)}
+                            </td>
+                            <td className={`bottom-border left-border ${this.state.isFocused && this.state.focusRow === 8 && this.state.focusCol === 3 ? 'focused' : ''}`}>
+                                {this.elementAt(8, 3)}
+                            </td>
+                            <td className={`bottom-border ${this.state.isFocused && this.state.focusRow === 8 && this.state.focusCol === 4 ? 'focused' : ''}`}>
+                                {this.elementAt(8, 4)}
+                            </td>
+                            <td className={`bottom-border right-border ${this.state.isFocused && this.state.focusRow === 8 && this.state.focusCol === 5 ? 'focused' : ''}`}>
+                                {this.elementAt(8, 5)}
+                            </td>
+                            <td className={`left-border bottom-border ${this.state.isFocused && this.state.focusRow === 8 && this.state.focusCol === 6 ? 'focused' : ''}`}>
+                                {this.elementAt(8, 6)}
+                            </td>
+                            <td className={`bottom-border ${this.state.isFocused && this.state.focusRow === 8 && this.state.focusCol === 7 ? 'focused' : ''}`}>
+                                {this.elementAt(8, 7)}
+                            </td>
+                            <td className={`bottom-border right-border ${this.state.isFocused && this.state.focusRow === 8 && this.state.focusCol === 8 ? 'focused' : ''}`}>
+                                {this.elementAt(8, 8)}
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        )
+    }
 
 }
 

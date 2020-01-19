@@ -11,10 +11,18 @@ class App extends Component {
         this.M = window.M;
         this.state = {
             board: {
-                focusRow: 0,
-                focusCol: 0,
                 values: Array(81).fill(0),
-                status: 'Empty'
+                // (lastRow, lastCol) indicate the last changed position in the board.
+                // prevValue indicate the previous value of the last changed position in
+                // the board. There three pieces of information are used to restore the
+                // last previous valid state of the board in case of an invalid edit of
+                // a position.
+                lastCol: 0,
+                lastRow: 0,
+                prevValue: 0,
+                isValid: true,
+                isComplete: false,
+                isEmpty: true
             },
             genStatus: {
                 generating: false,
@@ -53,6 +61,20 @@ class App extends Component {
         this.setState(newState);
     }
 
+    boardStatusFromState = () => {
+        if (!this.state.board.isValid) {
+            return 'Invalid';
+        } else if (this.state.board.isComplete) {
+            return 'Complete';
+        } else if (this.state.board.isEmpty) {
+            return 'Empty';
+        }
+    }
+
+    onValueSet = (col, lin, value) => {
+        console.log(`Will set (${col}, ${lin}) to ${value}.`);
+    }
+
     render() {
 
         // Whenever the board is being generated, it should be replaced by a message reflecting
@@ -66,7 +88,7 @@ class App extends Component {
 
         let boardDisplay = (
             <div>
-                <Board board={this.state.board} />
+                <Board board={this.state.board} onValueSet={this.onValueSet} />
             </div>
         );
         if (this.state.genStatus.generating) {
@@ -94,7 +116,7 @@ class App extends Component {
         // is not being generated.
         let boardStatusLine = (
             <div>
-              <p style={{ color: 'gray' }}>Board Status: <b>{this.state.board.status}</b></p>
+              <p style={{ color: 'gray' }}>Board Status: <b>{this.boardStatusFromState()}</b></p>
             </div>
           );
         if (this.state.genStatus.generating) {
