@@ -19,7 +19,7 @@ class Board extends Component {
         let pos = row * 9 + col;
         let elem = this.props.board.values[pos];
         if (elem === 0) {
-            return (<div>&nbsp;</div>);
+            return (<div>&nbsp;&nbsp;</div>);
         } else {
             return (<div>{elem}</div>);
         }
