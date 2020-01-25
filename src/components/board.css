@@ -7,6 +7,7 @@
     margin: 0;
     text-align: center;
     border: 1px solid lightgray;
+    width: 11.12%;
 }
 
 .board td.left-border {
@@ -29,11 +30,11 @@
     background-color: #ddd;
     text-decoration: underline;
     animation-name: blinking-cursor;
-    animation-duration: 1.5s;
+    animation-duration: 0.9s;
     animation-iteration-count: infinite;
 }
 
 @keyframes blinking-cursor {
     0% {text-decoration: none;}
-    90% {text-decoration: underline;}
+    80% {text-decoration: underline;}
 }

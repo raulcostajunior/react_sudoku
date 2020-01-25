@@ -42,45 +42,63 @@ class Board extends Component {
     }
 
     onKeyDown = (evt) => {
-        evt.preventDefault();
+        let handled = false;
         if (evt.keyCode >= 48 && evt.keyCode <= 57) {
+            handled = true;
             // User pressed a digit between 0 and 9 - sets the value at the board position
+            let focusPos = this.state.focusRow*9 + this.state.focusCol;
             if (this.props.onValueSet) {
                 this.props.onValueSet(this.state.focusRow, this.state.focusCol, evt.keyCode - 48);
             }
+            // Moves the focus to the next position - cycling around if necessary.
+            focusPos = focusPos === 80 ? 0 : focusPos + 1;
+            let newFocusRow = Math.trunc(focusPos / 9);
+            let newFocusCol = focusPos % 9;
+            this.setState({
+                focusRow: newFocusRow,
+                focusCol: newFocusCol
+            });
         } else if (evt.keyCode === 37) {
+            handled = true;
             // User pressed ArrowLeft
-            let newFocusCol = Math.max(0, this.state.focusCol - 1);
+            let newFocusCol = this.state.focusCol === 0 ? 8 : this.state.focusCol - 1;
             this.setState({
                 focusCol: newFocusCol,
                 focusRow: this.state.focusRow
             });
         } else if (evt.keyCode === 38) {
+            handled = true;
             // User pressed ArrowUp
-            let newFocusRow = Math.max(0, this.state.focusRow - 1);
+            let newFocusRow = this.state.focusRow === 0 ? 8 : this.state.focusRow - 1;
             this.setState({
                 focusCol: this.state.focusCol,
                 focusRow: newFocusRow
             });
         } else if (evt.keyCode === 39) {
+            handled = true;
             // User pressed ArrowRight
-            let newFocusCol = Math.min(8, this.state.focusCol + 1);
+            let newFocusCol = this.state.focusCol === 8 ? 0 : this.state.focusCol + 1;
             this.setState({
                 focusCol: newFocusCol,
                 focusRow: this.state.focusRow
             });
         } else if (evt.keyCode === 40) {
+            handled = true;
             // User pressed ArrowDown
-            let newFocusRow = Math.min(8, this.state.focusRow + 1);
+            let newFocusRow = this.state.focusRow === 8 ? 0 : this.state.focusRow + 1;
             this.setState({
                 focusCol: this.state.focusCol,
                 focusRow: newFocusRow
             });
         } else if (evt.keyCode === 8) {
+            handled = true;
             // User pressed Delete
             if (this.props.onValueSet) {
                 this.props.onValueSet(this.state.focusRow, this.state.focusCol, 0);
             }
+        }
+        if (handled) {
+            evt.preventDefault();
         }
     }
 
@@ -318,7 +336,7 @@ class Board extends Component {
                                 {this.elementAt(6, 7)}
                             </td>
                             <td className={`top-border right-border ${this.state.isFocused && this.state.focusRow === 6 && this.state.focusCol === 8 ? 'focused' : ''}`}>
-                                {this.elementAt(7, 7)}
+                                {this.elementAt(6,8)}
                             </td>
                         </tr>
                         <tr>
