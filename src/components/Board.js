@@ -84,10 +84,38 @@ class Board extends Component {
         }
     }
 
+    onMouseDown = (evt) => {
+        // Obtains the offsets of the board by traversing the DOM until the hosting tbody
+        // is found.
+        let elem = evt.target;
+        while (elem.localName !== 'tbody') {
+            elem = elem.parentNode;
+        }
+        let boardOffsetTop = elem.offsetParent.offsetTop;
+        let boardOffsetLeft = elem.offsetParent.offsetLeft;
+        // Determines the width and height of each board position.
+        let colWidth = elem.clientWidth/9;
+        let rowHeight = elem.clientHeight/9;
+        // Determines the coordinates of the board position that has been clicked.
+        let boardCol =
+            Math.trunc((evt.clientX + evt.view.scrollX - boardOffsetLeft) / colWidth);
+        let boardRow =
+            Math.trunc((evt.clientY + evt.view.scrollY - boardOffsetTop) / rowHeight);
+        // Updates the board focus to match the clicked position.
+        this.setState({
+            focusCol: boardCol,
+            focusRow: boardRow
+        });
+    }
+
     render() {
 
         return (
-            <div className="board" tabIndex="0" onKeyDown={this.onKeyDown} onFocus={this.onFocus} onBlur={this.onBlur}>
+            <div className="board" tabIndex="0"
+                onKeyDown={this.onKeyDown}
+                onMouseDown={this.onMouseDown}
+                onFocus={this.onFocus}
+                onBlur={this.onBlur}>
                 <table style={{ fontSize: 'larger', marginTop: '1em', marginBottom: '1em' }}>
                     <tbody>
                         <tr>
