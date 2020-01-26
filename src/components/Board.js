@@ -51,13 +51,16 @@ class Board extends Component {
                 this.props.onValueSet(this.state.focusRow, this.state.focusCol, evt.keyCode - 48);
             }
             // Moves the focus to the next position - cycling around if necessary.
-            focusPos = focusPos === 80 ? 0 : focusPos + 1;
-            let newFocusRow = Math.trunc(focusPos / 9);
-            let newFocusCol = focusPos % 9;
-            this.setState({
-                focusRow: newFocusRow,
-                focusCol: newFocusCol
-            });
+            // Except when the digit is 0, which has delete semantics.
+            if (evt.keyCode !== 48) {
+                focusPos = focusPos === 80 ? 0 : focusPos + 1;
+                let newFocusRow = Math.trunc(focusPos / 9);
+                let newFocusCol = focusPos % 9;
+                this.setState({
+                    focusRow: newFocusRow,
+                    focusCol: newFocusCol
+                });
+            }
         } else if (evt.keyCode === 37) {
             handled = true;
             // User pressed ArrowLeft
