@@ -12,10 +12,15 @@ class App extends Component {
         this.state = {
             board: {
                 values: Array(81).fill(0),
+                // List of read-only board positions.
+                // Each position is defined by a [row, col] array.
+                readOnlyPositions: [[0,0], [0,2], [3,3], [6, 8]],
                 isValid: true,
                 isComplete: false,
                 isEmpty: true,
-                invalidPositions: []
+                // List of invalid board positions.
+                // Each position is defined by a [row, col] array.
+                invalidPositions: [[0,1]]
             },
             genStatus: {
                 generating: false,
