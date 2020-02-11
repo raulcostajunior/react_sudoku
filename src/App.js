@@ -1,11 +1,15 @@
 import React, { Component } from 'react';
+import axios from 'axios';
 
 import Board from './components/Board';
 import FindSolutionsPanel from './components/FindSolutionsPanel';
 import GenerationPanel from './components/GenerationPanel';
 import SolutionBoard from './components/SolutionBoard';
 
+const API_BASE_URL = 'http://api-sudoku.herokuapp.com';
+
 class App extends Component {
+
     constructor() {
         super();
         this.M = window.M;
@@ -14,13 +18,13 @@ class App extends Component {
                 values: Array(81).fill(0),
                 // List of read-only board positions.
                 // Each position is defined by a [row, col] array.
-                readOnlyPositions: [[0,0], [0,2], [3,3], [6, 8]],
+                readOnlyPositions: [],
                 isValid: true,
                 isComplete: false,
                 isEmpty: true,
                 // List of invalid board positions.
                 // Each position is defined by a [row, col] array.
-                invalidPositions: [[0,1]]
+                invalidPositions: []
             },
             genStatus: {
                 generating: false,
@@ -67,7 +71,7 @@ class App extends Component {
             return 'Complete';
         } else if (this.state.board.isEmpty) {
             return 'Empty';
-        }
+        } else return 'Valid';
     }
 
     onValueSet = (lin, col, value) => {
@@ -79,7 +83,20 @@ class App extends Component {
             board: boardClone
         });
 
-        // TODO: dispatch a call to getBoardStatus api.
+        axios.post(API_BASE_URL + '/v1/board/status', {
+            board: boardClone.values
+        }).then((resp) => {
+            if (resp.status === 200) {
+                let boardClone = {...this.state.board};
+                boardClone.isValid = resp.data.isValid;
+                boardClone.isEmpty = resp.data.isEmpty;
+                boardClone.isComplete = resp.data.isComplete;
+                boardClone.invalidPositions = [...resp.data.invalidPositions];
+                this.setState({
+                    board: boardClone
+                });
+            }
+        });
     }
 
     render() {

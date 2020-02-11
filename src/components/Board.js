@@ -85,24 +85,8 @@ class Board extends Component {
         if (evt.keyCode >= 48 && evt.keyCode <= 57 && !isReadOnly) {
             handled = true;
             // User pressed a digit between 0 and 9 - sets the value at the board position
-            let focusPos = this.state.focusRow*9 + this.state.focusCol;
             if (this.props.onValueSet) {
                 this.props.onValueSet(this.state.focusRow, this.state.focusCol, evt.keyCode - 48);
-            }
-            // Moves the focus to the next non read-only position.
-            // Except when the digit is 0, which has delete semantics.
-            if (evt.keyCode !== 48) {
-                focusPos++;
-                while (focusPos <= 80 &&
-                       this.isReadOnlyPosition(Math.trunc(focusPos / 9), focusPos %9)) {
-                    focusPos++;
-                }
-                if (focusPos <= 80) {
-                    this.setState({
-                       focusRow: Math.trunc(focusPos / 9),
-                       focusCol: focusPos %9
-                    });
-                }
             }
         } else if (evt.keyCode === 37) {
             handled = true;
@@ -157,8 +141,27 @@ class Board extends Component {
                 });
             }
         } else if (evt.keyCode === 8 && !isReadOnly) {
+            // User pressed Backspace - deletes the current position and "returns"
+            // the focus.
             handled = true;
-            // User pressed Delete
+            let focusPos = this.state.focusRow*9 + this.state.focusCol;
+            if (this.props.onValueSet) {
+                this.props.onValueSet(this.state.focusRow, this.state.focusCol, 0);
+            }
+            focusPos--;
+            while (focusPos >= 0 &&
+                    this.isReadOnlyPosition(Math.trunc(focusPos / 9), focusPos %9)) {
+                focusPos--;
+            }
+            if (focusPos >= 0) {
+                this.setState({
+                    focusRow: Math.trunc(focusPos / 9),
+                    focusCol: focusPos %9
+                });
+            }
+        } else if (evt.keyCode === 46 && !isReadOnly) {
+            // User pressed Delete - deletes the current position.
+            handled = true;
             if (this.props.onValueSet) {
                 this.props.onValueSet(this.state.focusRow, this.state.focusCol, 0);
             }
