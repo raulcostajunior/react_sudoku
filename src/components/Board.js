@@ -26,7 +26,7 @@ class Board extends Component {
         // ${this.state.isFocused && this.state.focusRow === 0 && this.state.focusCol === 0 ? 'focused' : ''}
         let dynClasses = '';
         if (this.state.focusRow === row && this.state.focusCol === col &&
-            !this.isReadOnlyPosition(row, col)) {
+            this.state.isFocused && !this.isReadOnlyPosition(row, col)) {
                 dynClasses += ' focused';
         }
         if (this.isInvalidPosition(row, col) && !this.isReadOnlyPosition(row, col)) {
