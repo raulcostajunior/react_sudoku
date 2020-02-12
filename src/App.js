@@ -50,7 +50,7 @@ class App extends Component {
         this.M.FormSelect.init(selectElems);
     }
 
-    generateBoard = () => {
+    onGenerateBoard = () => {
         let newState = {
             genStatus: {
                 generating: true,
@@ -61,7 +61,26 @@ class App extends Component {
             }
         };
         this.setState(newState);
-        // TODO: dispatch call to api and start the periodic progress polling
+
+        axios.post(API_BASE_URL +
+                   `/v1/board/?difficultyLevel=${this.state.genStatus.level}`
+        ).then((resp) => {
+            console.log(`response from generation request:`);
+            console.log(resp);
+            console.log('GenStatus query url:');
+            console.log(resp.headers.location);
+            // TODO start polling url from location header until the board is generated.
+        });
+    }
+
+    onLevelSelected = (newLevel) => {
+        let newGenStatus = {...this.state.genStatus};
+        newGenStatus.level = newLevel;
+        this.setState({
+            genStatus: newGenStatus
+        });
+        console.log('genStatus set to:');
+        console.log(newGenStatus)
     }
 
     boardStatusFromState = () => {
@@ -157,7 +176,9 @@ class App extends Component {
                 <div className="row">
                     <div className="col s12 l7">
                         <div className="row">
-                            <GenerationPanel />
+                            <GenerationPanel
+                                onLevelSelected={this.onLevelSelected}
+                                onGenerateBoard={this.onGenerateBoard} />
                         </div>
                         {boardDisplay}
                         {boardStatusLine}
