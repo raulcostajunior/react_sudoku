@@ -27,7 +27,7 @@
 }
 
 .board td.focused {
-    background-color: #f1ffbf;
+    background-color: #f2fbe0;
     text-decoration: underline;
     animation-name: blinking-cursor;
     animation-duration: 0.9s;
