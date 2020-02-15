@@ -27,7 +27,7 @@
 }
 
 .board td.focused {
-    background-color: #eee;
+    background-color: #f1ffbf;
     text-decoration: underline;
     animation-name: blinking-cursor;
     animation-duration: 0.9s;
@@ -40,7 +40,7 @@
 }
 
 .board td.readonly {
-    background-color: #ccc;
+    background-color: #eee;
     text-decoration: none;
 }
 

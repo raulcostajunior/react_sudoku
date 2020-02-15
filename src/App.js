@@ -50,6 +50,53 @@ class App extends Component {
         this.M.FormSelect.init(selectElems);
     }
 
+    pollBoardGeneration = (pollUrl) => {
+        axios.get(
+            pollUrl
+        ).then((resp) => {
+            if (resp.data.status === 'GeneratorResult.NO_ERROR') {
+                // Board generation completed.
+                let newGenStatus = {...this.state.genStatus};
+                let newBoard = {...this.state.board};
+                newGenStatus.generating = false;
+                newBoard.values = resp.data.board;
+                let roPositions = [];
+                for (let i = 0; i < resp.data.board.length; i++) {
+                    if (resp.data.board[i] !== 0) {
+                        let row = Math.trunc(i / 9);
+                        let col = i % 9;
+                        let roPosition = [row, col];
+                        roPositions.push(roPosition);
+                    }
+                }
+                newBoard.readOnlyPositions = roPositions;
+                // We always trust the server side generation logic...
+                newBoard.isValid = true;
+                newBoard.isComplete = false;
+                newBoard.isEmpty = false;
+                newBoard.invalidPositions = [];
+                this.setState({
+                    board: newBoard,
+                    genStatus: newGenStatus
+                });
+            } else if (resp.data.status === 'generating') {
+                // Board generation in progress; schedule next polling call.
+                setTimeout(() => {
+                    this.pollBoardGeneration(pollUrl);
+                }, 250);
+
+            } else {
+                // Assume an error happened.
+                let newGenStatus = {...this.state.genStatus};
+                newGenStatus.generationError = true;
+                newGenStatus.generating = false;
+                this.setState({
+                    genStatus: newGenStatus
+                });
+            }
+        });
+    }
+
     onGenerateBoard = () => {
         let newState = {
             genStatus: {
@@ -65,11 +112,17 @@ class App extends Component {
         axios.post(API_BASE_URL +
                    `/v1/board/?difficultyLevel=${this.state.genStatus.level}`
         ).then((resp) => {
-            console.log(`response from generation request:`);
-            console.log(resp);
-            console.log('GenStatus query url:');
-            console.log(resp.headers.location);
-            // TODO start polling url from location header until the board is generated.
+            if (resp.status !== 202) {
+                let newGenStatus = {...this.state.genStatus};
+                newGenStatus.generationError = true;
+                newGenStatus.generating = false;
+                this.setState({
+                    genStatus: newGenStatus
+                });
+            } else {
+                // Generation request submitted successfully - start polling generation progress.
+                this.pollBoardGeneration(resp.headers.location);
+            }
         });
     }
 
@@ -79,8 +132,6 @@ class App extends Component {
         this.setState({
             genStatus: newGenStatus
         });
-        console.log('genStatus set to:');
-        console.log(newGenStatus)
     }
 
     boardStatusFromState = () => {
@@ -101,9 +152,8 @@ class App extends Component {
         this.setState({
             board: boardClone
         });
-
         axios.post(API_BASE_URL + '/v1/board/status', {
-            board: boardClone.values
+            board: valuesClone
         }).then((resp) => {
             if (resp.status === 200) {
                 let boardClone = {...this.state.board};
