@@ -10,7 +10,6 @@ class GenerationPanel extends Component {
     }
 
     onGenerateBoard = (evt) => {
-        console.log('On Generate Board called!');
         if (this.props.onGenerateBoard) {
             this.props.onGenerateBoard()
         }
@@ -18,6 +17,8 @@ class GenerationPanel extends Component {
     }
 
     render() {
+
+        let disabledStyle = this.props.enabled ? '' : 'disabled';
 
         return (
             <div>
@@ -30,7 +31,7 @@ class GenerationPanel extends Component {
                     <label htmlFor="difficulty">Board Difficulty</label>
                 </div>
                 <div>
-                    <button className="btn input-field col offset-s1"
+                    <button className={`btn input-field col offset-s1 ${disabledStyle}`}
                             onClick={this.onGenerateBoard}
                             type="submit">
                         Generate Board

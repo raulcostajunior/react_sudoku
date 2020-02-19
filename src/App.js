@@ -4,7 +4,7 @@ import axios from 'axios';
 import Board from './components/Board';
 import FindSolutionsPanel from './components/FindSolutionsPanel';
 import GenerationPanel from './components/GenerationPanel';
-import SolutionBoard from './components/SolutionBoard';
+import SolutionsPanel from './components/SolutionsPanel';
 
 const API_BASE_URL = 'http://api-sudoku.herokuapp.com';
 
@@ -58,6 +58,7 @@ class App extends Component {
                 // Board generation completed.
                 let newGenStatus = {...this.state.genStatus};
                 let newBoard = {...this.state.board};
+                let newSolSearchStatus = {...this.state.solSearchStatus};
                 newGenStatus.generating = false;
                 newBoard.values = resp.data.board;
                 let roPositions = [];
@@ -70,6 +71,7 @@ class App extends Component {
                     }
                 }
                 newBoard.readOnlyPositions = roPositions;
+                newSolSearchStatus.solutions = [];
                 // We always trust the server side generation logic...
                 newBoard.isValid = true;
                 newBoard.isComplete = false;
@@ -77,7 +79,8 @@ class App extends Component {
                 newBoard.invalidPositions = [];
                 this.setState({
                     board: newBoard,
-                    genStatus: newGenStatus
+                    genStatus: newGenStatus,
+                    solSearchStatus: newSolSearchStatus
                 });
             } else if (resp.data.status === 'generating') {
                 // Board generation in progress; schedule next polling call.
@@ -97,7 +100,23 @@ class App extends Component {
         });
     }
 
+    onSearchSolutions = () => {
+        // TODO: add real method body
+        console.log('onSearchSolutions invoked!');
+
+        if (this.state.genStatus.generating || 
+            this.state.solSearchStatus.searching) {
+                // Doesn't trigger solutions searching while generating or searching solutions
+                return;
+        }
+    }
+
     onGenerateBoard = () => {
+        if (this.state.genStatus.generating || 
+            this.state.solSearchStatus.searching) {
+                // Doesn't trigger board generations while generating or searching solutions
+                return;
+        }
         let newState = {
             genStatus: {
                 generating: true,
@@ -126,6 +145,7 @@ class App extends Component {
         });
     }
 
+    
     onLevelSelected = (newLevel) => {
         let newGenStatus = {...this.state.genStatus};
         newGenStatus.level = newLevel;
@@ -181,7 +201,8 @@ class App extends Component {
 
         let boardDisplay = (
             <div>
-                <Board board={this.state.board} onValueSet={this.onValueSet} />
+                <Board board={this.state.board} 
+                       onValueSet={this.onValueSet} />
             </div>
         );
         if (this.state.genStatus.generating) {
@@ -204,6 +225,31 @@ class App extends Component {
             )
         }
 
+        let solutionsDisplay = (
+            <SolutionsPanel solutions={this.state.solSearchStatus.solutions} 
+                            readOnlyPositions={this.state.board.readOnlyPositions} />
+        );
+        if (this.state.solSearchStatus.searching) {
+            solutionsDisplay = (
+                <div>
+                    <div className="progress"
+                         style={`width:${this.state.solSearchStatus.progress}%`}>
+                    </div>
+                    <p className="smaller">
+                        searching solutions... (found {this.state.solSearchStatus.foundSoFar} so far)
+                    </p>
+                </div>
+            )
+        } else if (this.state.solSearchStatus.searchingError) {
+            solutionsDisplay = (
+                <div>
+                    <p className="red-text">
+                        Error searching board solutions.<br/>
+                        Please try again.
+                    </p>
+                </div>
+            )
+        }
 
         // The board status line below the board should only be rendered when the board
         // is not being generated.
@@ -227,6 +273,8 @@ class App extends Component {
                     <div className="col s12 l7">
                         <div className="row">
                             <GenerationPanel
+                                enabled={!this.state.genStatus.generating &&
+                                         !this.state.solSearchStatus.searching}
                                 onLevelSelected={this.onLevelSelected}
                                 onGenerateBoard={this.onGenerateBoard} />
                         </div>
@@ -235,15 +283,13 @@ class App extends Component {
                     </div>
                     <div className="col s12 l4 offset-l1">
                         <div className="row">
-                            <FindSolutionsPanel />
+                            <FindSolutionsPanel 
+                                enabled={!this.state.genStatus.generating &&
+                                         !this.state.solSearchStatus.searching}
+                                onSearchSolutions={this.onSearchSolutions} />
                         </div>
                         <div className="row">
-                            <div className="col">
-                                <SolutionBoard />
-                            </div>
-                            <div className="col">
-                                <SolutionBoard />
-                            </div>
+                            {solutionsDisplay}
                         </div>
                     </div>
                 </div>

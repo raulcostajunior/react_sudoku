@@ -2,6 +2,8 @@ import React from 'react';
 
 const SolutionBoard = (props) => {
 
+    // TODO: react to properties 'board' and 'readOnlyPositions'
+
     return (
         <table style={{ fontSize: 'smaller', marginTop: '1em', marginBottom: '1em' }}>
             <tbody>
