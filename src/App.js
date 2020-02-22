@@ -109,16 +109,28 @@ class App extends Component {
         ).then((resp) => {
             if (resp.data.status === 'SolverResult.NO_ERROR') {
                 // Solution searching completed.
-                console.log('Got solution response!!');
-                console.log(resp.data);
                 let newSolSearchStatus = {...this.state.solSearchStatus};
                 newSolSearchStatus.searching = false;
+                newSolSearchStatus.searchingError = false;
                 newSolSearchStatus.progress = 100.0;
                 newSolSearchStatus.solutions = resp.data.solved_boards;
+                newSolSearchStatus.searchTimeSecs = resp.data.solve_time;
                 this.setState({
                      solSearchStatus: newSolSearchStatus
                 });
-            } else if (resp.data.status === 'solving') {
+            } else if (resp.data.status === 'SolverResult.HAS_NO_SOLUTION' ||
+                       resp.data.status === 'SolverResult.INVALID_BOARD') {
+                let newSolSearchStatus = {...this.state.solSearchStatus};
+                newSolSearchStatus.searching = false;
+                newSolSearchStatus.searchingError = false;
+                newSolSearchStatus.progress = 100.0;
+                newSolSearchStatus.solutions = [];
+                newSolSearchStatus.searchTimeSecs = resp.data.solve_time;
+                this.setState({
+                    solSearchStatus: newSolSearchStatus
+                });
+            }
+            else if (resp.data.status === 'solving') {
                 // Solution search in progress; update progress and schedule next polling call.
                 let newSolSearchStatus = {...this.state.solSearchStatus};
                 newSolSearchStatus.progress = resp.data.progress_percent;
@@ -126,9 +138,10 @@ class App extends Component {
                 this.setState({
                     solSearchStatus: newSolSearchStatus
                 });
+                let waitMillis = (resp.data.progress >= 98.0 ? 250 : 1000);
                 setTimeout(() => {
                     this.pollSolutionSearching(pollUrl);
-                }, 1000);
+                }, waitMillis);
             } else {
                 // Assume an error happened.
                 let newSolSearchStatus = {...this.state.solSearchStatus};
@@ -195,6 +208,14 @@ class App extends Component {
                 level: this.state.genStatus.level,
                 curStep: 0,
                 totalSteps: 0
+            },
+            solSearchStatus: {
+                searching: false,
+                searchingError: false,
+                searchTimeSecs: 0.0,
+                progress: 0.0,
+                foundSoFar: 0,
+                solutions: []
             }
         };
         this.setState(newState);
@@ -298,16 +319,20 @@ class App extends Component {
 
         let solutionsDisplay = (
             <SolutionsPanel solutions={this.state.solSearchStatus.solutions}
-                            readOnlyPositions={this.state.board.readOnlyPositions} />
+                            readOnlyPositions={this.state.board.readOnlyPositions}
+                            searchTime={this.state.solSearchStatus.searchTimeSecs} />
         );
         if (this.state.solSearchStatus.searching) {
             solutionsDisplay = (
-                <div>
-                    <div className="progress"
-                         style={{width: `${this.state.solSearchStatus.progress}%`}}>
+                <div className="col s12">
+                    <div className="progress">
+                        <div className="indeterminate">
+                        </div>
                     </div>
-                    <p className="smaller">
-                        searching solutions... (found {this.state.solSearchStatus.foundSoFar} so far)
+                    <p style={{color: 'gray', textAlign: 'center'}}>
+                        <b>{this.state.solSearchStatus.progress.toFixed(2)} %</b>
+                        <br />
+                       found {this.state.solSearchStatus.foundSoFar} so far
                     </p>
                 </div>
             )
@@ -356,7 +381,10 @@ class App extends Component {
                         <div className="row">
                             <FindSolutionsPanel
                                 enabled={!this.state.genStatus.generating &&
-                                         !this.state.solSearchStatus.searching}
+                                         !this.state.solSearchStatus.searching &&
+                                         this.state.board.isValid &&
+                                         !this.state.board.isComplete &&
+                                         !this.state.board.isEmpty}
                                 onSearchSolutions={this.onSearchSolutions} />
                         </div>
                         <div className="row">

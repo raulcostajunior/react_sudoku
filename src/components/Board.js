@@ -23,7 +23,6 @@ class Board extends Component {
     }
 
     dynamicClassesAt = (row, col) => {
-        // ${this.state.isFocused && this.state.focusRow === 0 && this.state.focusCol === 0 ? 'focused' : ''}
         let dynClasses = '';
         if (this.state.focusRow === row && this.state.focusCol === col &&
             this.state.isFocused && !this.isReadOnlyPosition(row, col)) {
@@ -35,7 +34,6 @@ class Board extends Component {
         if (this.isReadOnlyPosition(row, col)) {
             dynClasses += ' readonly';
         }
-        // console.log('dynamicClasses (' + row + ', ' + col +') = ' + dynClasses);
         return dynClasses;
     }
 
