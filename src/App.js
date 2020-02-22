@@ -36,6 +36,7 @@ class App extends Component {
             solSearchStatus: {
                 searching: false,
                 searchingError: false,
+                searchTimeSecs: 0.0,
                 progress: 0.0,
                 foundSoFar: 0,
                 solutions: [
@@ -48,6 +49,7 @@ class App extends Component {
     componentDidMount() {
         let selectElems = document.querySelectorAll("select");
         this.M.FormSelect.init(selectElems);
+        this.onGenerateBoard();
     }
 
     pollBoardGeneration = (pollUrl) => {
@@ -100,19 +102,88 @@ class App extends Component {
         });
     }
 
-    onSearchSolutions = () => {
-        // TODO: add real method body
-        console.log('onSearchSolutions invoked!');
 
-        if (this.state.genStatus.generating || 
+    pollSolutionSearching = (pollUrl) => {
+        axios.get(
+            pollUrl
+        ).then((resp) => {
+            if (resp.data.status === 'SolverResult.NO_ERROR') {
+                // Solution searching completed.
+                console.log('Got solution response!!');
+                console.log(resp.data);
+                let newSolSearchStatus = {...this.state.solSearchStatus};
+                newSolSearchStatus.searching = false;
+                newSolSearchStatus.progress = 100.0;
+                newSolSearchStatus.solutions = resp.data.solved_boards;
+                this.setState({
+                     solSearchStatus: newSolSearchStatus
+                });
+            } else if (resp.data.status === 'solving') {
+                // Solution search in progress; update progress and schedule next polling call.
+                let newSolSearchStatus = {...this.state.solSearchStatus};
+                newSolSearchStatus.progress = resp.data.progress_percent;
+                newSolSearchStatus.foundSoFar = resp.data.num_solutions;
+                this.setState({
+                    solSearchStatus: newSolSearchStatus
+                });
+                setTimeout(() => {
+                    this.pollSolutionSearching(pollUrl);
+                }, 1000);
+            } else {
+                // Assume an error happened.
+                let newSolSearchStatus = {...this.state.solSearchStatus};
+                newSolSearchStatus.searchingError = true;
+                newSolSearchStatus.searching = false;
+                newSolSearchStatus.solutions = [];
+                newSolSearchStatus.progress = 0.0;
+                newSolSearchStatus.foundSoFar = 0;
+                this.setState({
+                    genStatus: newSolSearchStatus
+                });
+            }
+        });
+    }
+
+    onSearchSolutions = () => {
+        if (this.state.genStatus.generating ||
             this.state.solSearchStatus.searching) {
                 // Doesn't trigger solutions searching while generating or searching solutions
                 return;
         }
+
+        let newState = {
+            solSearchStatus: {
+                searching: true,
+                searchingError: false,
+                progress: 0.0,
+                foundSoFar: 0,
+                solutions: []
+            }
+        };
+        this.setState(newState);
+
+        axios.post(API_BASE_URL +
+                      `/v1/solved-board/all`,
+                   {'board': this.state.board.values}
+        ).then((resp) => {
+            if (resp.status !== 202) {
+                let newSolSearchStatus = {...this.state.solSearcchStatus};
+                newSolSearchStatus.searchingError = true;
+                newSolSearchStatus.searching = false;
+                newSolSearchStatus.solutions = [];
+                this.setState({
+                    solSearchStatus: newSolSearchStatus
+                });
+            } else {
+                // Request submitted successfully - start polling searching progress.
+                this.pollSolutionSearching(resp.headers.location);
+            }
+        });
     }
 
+
     onGenerateBoard = () => {
-        if (this.state.genStatus.generating || 
+        if (this.state.genStatus.generating ||
             this.state.solSearchStatus.searching) {
                 // Doesn't trigger board generations while generating or searching solutions
                 return;
@@ -145,7 +216,7 @@ class App extends Component {
         });
     }
 
-    
+
     onLevelSelected = (newLevel) => {
         let newGenStatus = {...this.state.genStatus};
         newGenStatus.level = newLevel;
@@ -201,7 +272,7 @@ class App extends Component {
 
         let boardDisplay = (
             <div>
-                <Board board={this.state.board} 
+                <Board board={this.state.board}
                        onValueSet={this.onValueSet} />
             </div>
         );
@@ -226,14 +297,14 @@ class App extends Component {
         }
 
         let solutionsDisplay = (
-            <SolutionsPanel solutions={this.state.solSearchStatus.solutions} 
+            <SolutionsPanel solutions={this.state.solSearchStatus.solutions}
                             readOnlyPositions={this.state.board.readOnlyPositions} />
         );
         if (this.state.solSearchStatus.searching) {
             solutionsDisplay = (
                 <div>
                     <div className="progress"
-                         style={`width:${this.state.solSearchStatus.progress}%`}>
+                         style={{width: `${this.state.solSearchStatus.progress}%`}}>
                     </div>
                     <p className="smaller">
                         searching solutions... (found {this.state.solSearchStatus.foundSoFar} so far)
@@ -283,7 +354,7 @@ class App extends Component {
                     </div>
                     <div className="col s12 l4 offset-l1">
                         <div className="row">
-                            <FindSolutionsPanel 
+                            <FindSolutionsPanel
                                 enabled={!this.state.genStatus.generating &&
                                          !this.state.solSearchStatus.searching}
                                 onSearchSolutions={this.onSearchSolutions} />
