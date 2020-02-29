@@ -14,6 +14,7 @@ class App extends Component {
         super();
         this.M = window.M;
         this.cancelSearchUrl = ''; // not stored in the state - doesn't cause any UI update.
+        this.searchPollTimer = null;
         this.state = {
             board: {
                 values: Array(81).fill(0),
@@ -141,7 +142,7 @@ class App extends Component {
                     solSearchStatus: newSolSearchStatus
                 });
                 let waitMillis = (resp.data.progress >= 98.0 ? 250 : 1000);
-                setTimeout(() => {
+                this.searchPollTimer = setTimeout(() => {
                     this.pollSolutionSearching(pollUrl);
                 }, waitMillis);
             } else {
@@ -199,6 +200,9 @@ class App extends Component {
     onCancelSearch = () => {
         if (!this.state.solSearchStatus.searching) {
             return;
+        }
+        if (this.searchPollTimer) {
+            clearTimeout(this.searchPollTimer);
         }
         axios.delete(this.cancelSearchUrl).then((resp) => {
             if (resp.status === 204) {
