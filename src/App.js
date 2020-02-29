@@ -13,6 +13,7 @@ class App extends Component {
     constructor() {
         super();
         this.M = window.M;
+        this.cancelSearchUrl = ''; // not stored in the state - doesn't cause any UI update.
         this.state = {
             board: {
                 values: Array(81).fill(0),
@@ -131,6 +132,7 @@ class App extends Component {
                 });
             }
             else if (resp.data.status === 'solving') {
+                this.cancelSearchUrl = resp.data.cancel_url;
                 // Solution search in progress; update progress and schedule next polling call.
                 let newSolSearchStatus = {...this.state.solSearchStatus};
                 newSolSearchStatus.progress = resp.data.progress_percent;
@@ -194,6 +196,34 @@ class App extends Component {
         });
     }
 
+    onCancelSearch = () => {
+        if (!this.state.solSearchStatus.searching) {
+            return;
+        }
+        axios.delete(this.cancelSearchUrl).then((resp) => {
+            if (resp.status === 204) {
+                // Search has been cancelled.
+                let newSolSearchStatus = {...this.state.solSearcchStatus};
+                newSolSearchStatus.searchingError = false;
+                newSolSearchStatus.searching = false;
+                newSolSearchStatus.solutions = [];
+                this.setState({
+                    solSearchStatus: newSolSearchStatus
+                });
+            } else if (resp.status === 404) {
+                // Search has not been cancelled, but the search process doesn't
+                // know about the specific search anymore - assume it finished while
+                // the request was "flying" - just reset the UI, but preserve the
+                // current solution set.
+                let newSolSearchStatus = {...this.state.solSearcchStatus};
+                newSolSearchStatus.searchingError = false;
+                newSolSearchStatus.searching = false;
+                  this.setState({
+                    solSearchStatus: newSolSearchStatus
+                });
+            }
+        });
+    }
 
     onGenerateBoard = () => {
         if (this.state.genStatus.generating ||
@@ -385,7 +415,9 @@ class App extends Component {
                                          this.state.board.isValid &&
                                          !this.state.board.isComplete &&
                                          !this.state.board.isEmpty}
-                                onSearchSolutions={this.onSearchSolutions} />
+                                searching={this.state.solSearchStatus.searching}
+                                onSearchSolutions={this.onSearchSolutions}
+                                onCancelSearch={this.onCancelSearch} />
                         </div>
                         <div className="row">
                             {solutionsDisplay}
