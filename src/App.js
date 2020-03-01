@@ -396,7 +396,7 @@ class App extends Component {
             <div className="container">
                 <div className="row">
                     <div className="col s12">
-                        <h5>React Sudoku</h5>
+                        <h5>Sudoku Playground</h5>
                     </div>
                 </div>
                 <div className="row">
@@ -426,6 +426,16 @@ class App extends Component {
                         <div className="row">
                             {solutionsDisplay}
                         </div>
+                    </div>
+                </div>
+                <div className="row">
+                    <div className="col s12">
+                        <div className="divider"></div>
+                    </div>
+                </div>
+                <div className="row">
+                    <div className="col s12 smaller">
+                        Created by Raul Costa Junior. Source code available at <a href="http://github.com/raulcostajunior/react_sudoku">Github</a>.
                     </div>
                 </div>
             </div >
