@@ -434,7 +434,7 @@ class App extends Component {
                     </div>
                 </div>
                 <div className="row">
-                    <div className="col s12 smaller">
+                    <div style={{ color: 'gray' }} className="col s12 smaller">
                         Created by Raul Costa Junior. Source code available at <a href="http://github.com/raulcostajunior/react_sudoku">Github</a>.
                     </div>
                 </div>
