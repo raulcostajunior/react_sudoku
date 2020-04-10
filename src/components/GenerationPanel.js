@@ -16,13 +16,20 @@ class GenerationPanel extends Component {
         evt.preventDefault();
     }
 
+    onClearBoard = (evt) => {
+        if (this.props.onClearBoard) {
+            this.props.onClearBoard();
+        }
+        evt.preventDefault();
+    }
+
     render() {
 
         let disabledStyle = this.props.enabled ? '' : 'disabled';
 
         return (
             <div>
-                <div className="input-field col s4">
+                <div className="input-field col s3">
                     <select id="difficulty" onChange={this.onLevelChanged}>
                         <option value="1">Easy</option>
                         <option value="2">Medium</option>
@@ -32,10 +39,17 @@ class GenerationPanel extends Component {
                 </div>
                 <div>
                     <button className={`btn input-field col offset-s1 ${disabledStyle}`}
-                            onClick={this.onGenerateBoard}
-                            type="submit">
+                        onClick={this.onGenerateBoard}
+                        type="submit">
                         Generate Board
-                </button>
+                    </button>
+                </div>
+                <div>
+                    <button className={`btn input-field col offset-s1 ${disabledStyle}`}
+                        onClick={this.onClearBoard}
+                        type="submit">
+                        Clear Board
+                    </button>
                 </div>
             </div>
         )

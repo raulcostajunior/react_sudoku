@@ -41,6 +41,7 @@ class App extends Component {
                 searchTimeSecs: 0.0,
                 progress: 0.0,
                 foundSoFar: 0,
+                unsolvables: 0,
                 solutions: [
 
                 ] // Array of values arrays
@@ -51,7 +52,6 @@ class App extends Component {
     componentDidMount() {
         let selectElems = document.querySelectorAll("select");
         this.M.FormSelect.init(selectElems);
-        this.onGenerateBoard();
     }
 
     pollBoardGeneration = (pollUrl) => {
@@ -60,9 +60,9 @@ class App extends Component {
         ).then((resp) => {
             if (resp.data.status === 'GeneratorResult.NO_ERROR') {
                 // Board generation completed.
-                let newGenStatus = {...this.state.genStatus};
-                let newBoard = {...this.state.board};
-                let newSolSearchStatus = {...this.state.solSearchStatus};
+                let newGenStatus = { ...this.state.genStatus };
+                let newBoard = { ...this.state.board };
+                let newSolSearchStatus = { ...this.state.solSearchStatus };
                 newGenStatus.generating = false;
                 newBoard.values = resp.data.board;
                 let roPositions = [];
@@ -94,7 +94,7 @@ class App extends Component {
 
             } else {
                 // Assume an error happened.
-                let newGenStatus = {...this.state.genStatus};
+                let newGenStatus = { ...this.state.genStatus };
                 newGenStatus.generationError = true;
                 newGenStatus.generating = false;
                 this.setState({
@@ -111,18 +111,18 @@ class App extends Component {
         ).then((resp) => {
             if (resp.data.status === 'SolverResult.NO_ERROR') {
                 // Solution searching completed.
-                let newSolSearchStatus = {...this.state.solSearchStatus};
+                let newSolSearchStatus = { ...this.state.solSearchStatus };
                 newSolSearchStatus.searching = false;
                 newSolSearchStatus.searchingError = false;
                 newSolSearchStatus.progress = 100.0;
                 newSolSearchStatus.solutions = resp.data.solved_boards;
                 newSolSearchStatus.searchTimeSecs = resp.data.solve_time;
                 this.setState({
-                     solSearchStatus: newSolSearchStatus
+                    solSearchStatus: newSolSearchStatus
                 });
             } else if (resp.data.status === 'SolverResult.HAS_NO_SOLUTION' ||
-                       resp.data.status === 'SolverResult.INVALID_BOARD') {
-                let newSolSearchStatus = {...this.state.solSearchStatus};
+                resp.data.status === 'SolverResult.INVALID_BOARD') {
+                let newSolSearchStatus = { ...this.state.solSearchStatus };
                 newSolSearchStatus.searching = false;
                 newSolSearchStatus.searchingError = false;
                 newSolSearchStatus.progress = 100.0;
@@ -135,9 +135,10 @@ class App extends Component {
             else if (resp.data.status === 'solving') {
                 this.cancelSearchUrl = resp.data.cancel_url;
                 // Solution search in progress; update progress and schedule next polling call.
-                let newSolSearchStatus = {...this.state.solSearchStatus};
+                let newSolSearchStatus = { ...this.state.solSearchStatus };
                 newSolSearchStatus.progress = resp.data.progress_percent;
                 newSolSearchStatus.foundSoFar = resp.data.num_solutions;
+                newSolSearchStatus.unsolvables = resp.data.num_unsolvables;
                 this.setState({
                     solSearchStatus: newSolSearchStatus
                 });
@@ -147,12 +148,13 @@ class App extends Component {
                 }, waitMillis);
             } else {
                 // Assume an error happened.
-                let newSolSearchStatus = {...this.state.solSearchStatus};
+                let newSolSearchStatus = { ...this.state.solSearchStatus };
                 newSolSearchStatus.searchingError = true;
                 newSolSearchStatus.searching = false;
                 newSolSearchStatus.solutions = [];
                 newSolSearchStatus.progress = 0.0;
                 newSolSearchStatus.foundSoFar = 0;
+                newSolSearchStatus.unsolvables = 0;
                 this.setState({
                     genStatus: newSolSearchStatus
                 });
@@ -163,8 +165,8 @@ class App extends Component {
     onSearchSolutions = () => {
         if (this.state.genStatus.generating ||
             this.state.solSearchStatus.searching) {
-                // Doesn't trigger solutions searching while generating or searching solutions
-                return;
+            // Doesn't trigger solutions searching while generating or searching solutions
+            return;
         }
 
         let newState = {
@@ -173,17 +175,21 @@ class App extends Component {
                 searchingError: false,
                 progress: 0.0,
                 foundSoFar: 0,
+                unsolvables: 0,
                 solutions: []
             }
         };
         this.setState(newState);
 
         axios.post(API_BASE_URL +
-                      `/v1/solved-board/all`,
-                   {'board': this.state.board.values}
+            `/v1/solved-board/all`,
+            {
+                'board': this.state.board.values,
+                'maxSolutions': 50
+            }
         ).then((resp) => {
             if (resp.status !== 202) {
-                let newSolSearchStatus = {...this.state.solSearcchStatus};
+                let newSolSearchStatus = { ...this.state.solSearcchStatus };
                 newSolSearchStatus.searchingError = true;
                 newSolSearchStatus.searching = false;
                 newSolSearchStatus.solutions = [];
@@ -207,7 +213,7 @@ class App extends Component {
         axios.delete(this.cancelSearchUrl).then((resp) => {
             if (resp.status === 204) {
                 // Search has been cancelled.
-                let newSolSearchStatus = {...this.state.solSearcchStatus};
+                let newSolSearchStatus = { ...this.state.solSearcchStatus };
                 newSolSearchStatus.searchingError = false;
                 newSolSearchStatus.searching = false;
                 newSolSearchStatus.solutions = [];
@@ -219,21 +225,49 @@ class App extends Component {
                 // know about the specific search anymore - assume it finished while
                 // the request was "flying" - just reset the UI, but preserve the
                 // current solution set.
-                let newSolSearchStatus = {...this.state.solSearcchStatus};
+                let newSolSearchStatus = { ...this.state.solSearcchStatus };
                 newSolSearchStatus.searchingError = false;
                 newSolSearchStatus.searching = false;
-                  this.setState({
+                this.setState({
                     solSearchStatus: newSolSearchStatus
                 });
             }
         });
     }
 
+    onClearBoard = () => {
+        if (this.state.genStatus.generating ||
+            this.state.solSearchStatus.searching) {
+            // Doesn't clear board generations while generating or searching solutions
+            return;
+        }
+        let newState = {
+            board: {
+                values: Array(81).fill(0),
+                readOnlyPositions: [],
+                isValid: true,
+                isComplete: false,
+                isEmpty: true,
+                invalidPositions: []
+            },
+            solSearchStatus: {
+                searching: false,
+                searchingError: false,
+                searchTimeSecs: 0.0,
+                progress: 0.0,
+                foundSoFar: 0,
+                unsolvables: 0,
+                solutions: []
+            }
+        };
+        this.setState(newState);
+    }
+
     onGenerateBoard = () => {
         if (this.state.genStatus.generating ||
             this.state.solSearchStatus.searching) {
-                // Doesn't trigger board generations while generating or searching solutions
-                return;
+            // Doesn't trigger board generations while generating or searching solutions
+            return;
         }
         let newState = {
             genStatus: {
@@ -249,16 +283,17 @@ class App extends Component {
                 searchTimeSecs: 0.0,
                 progress: 0.0,
                 foundSoFar: 0,
+                unsolvables: 0,
                 solutions: []
             }
         };
         this.setState(newState);
 
         axios.post(API_BASE_URL +
-                   `/v1/board/?difficultyLevel=${this.state.genStatus.level}`
+            `/v1/board/?difficultyLevel=${this.state.genStatus.level}`
         ).then((resp) => {
             if (resp.status !== 202) {
-                let newGenStatus = {...this.state.genStatus};
+                let newGenStatus = { ...this.state.genStatus };
                 newGenStatus.generationError = true;
                 newGenStatus.generating = false;
                 this.setState({
@@ -273,7 +308,7 @@ class App extends Component {
 
 
     onLevelSelected = (newLevel) => {
-        let newGenStatus = {...this.state.genStatus};
+        let newGenStatus = { ...this.state.genStatus };
         newGenStatus.level = newLevel;
         this.setState({
             genStatus: newGenStatus
@@ -291,9 +326,9 @@ class App extends Component {
     }
 
     onValueSet = (lin, col, value) => {
-        let boardClone = {...this.state.board};
+        let boardClone = { ...this.state.board };
         let valuesClone = [...this.state.board.values];
-        valuesClone[lin*9 + col] = value;
+        valuesClone[lin * 9 + col] = value;
         boardClone.values = valuesClone;
         this.setState({
             board: boardClone
@@ -302,7 +337,7 @@ class App extends Component {
             board: valuesClone
         }).then((resp) => {
             if (resp.status === 200) {
-                let boardClone = {...this.state.board};
+                let boardClone = { ...this.state.board };
                 boardClone.isValid = resp.data.isValid;
                 boardClone.isEmpty = resp.data.isEmpty;
                 boardClone.isComplete = resp.data.isComplete;
@@ -328,7 +363,7 @@ class App extends Component {
         let boardDisplay = (
             <div>
                 <Board board={this.state.board}
-                       onValueSet={this.onValueSet} />
+                    onValueSet={this.onValueSet} />
             </div>
         );
         if (this.state.genStatus.generating) {
@@ -344,7 +379,7 @@ class App extends Component {
             boardDisplay = (
                 <div>
                     <p className="red-text">
-                        Error generating {levelText} board.<br/>
+                        Error generating {levelText} board.<br />
                         Please try again.
                     </p>
                 </div>
@@ -353,8 +388,8 @@ class App extends Component {
 
         let solutionsDisplay = (
             <SolutionsPanel solutions={this.state.solSearchStatus.solutions}
-                            readOnlyPositions={this.state.board.readOnlyPositions}
-                            searchTime={this.state.solSearchStatus.searchTimeSecs} />
+                readOnlyPositions={this.state.board.readOnlyPositions}
+                searchTime={this.state.solSearchStatus.searchTimeSecs} />
         );
         if (this.state.solSearchStatus.searching) {
             solutionsDisplay = (
@@ -363,10 +398,11 @@ class App extends Component {
                         <div className="indeterminate">
                         </div>
                     </div>
-                    <p style={{color: 'gray', textAlign: 'center'}}>
+                    <p style={{ color: 'gray', textAlign: 'center' }}>
                         <b>{this.state.solSearchStatus.progress.toFixed(2)} %</b>
                         <br />
-                       found {this.state.solSearchStatus.foundSoFar} so far
+                        <b>{this.state.solSearchStatus.unsolvables}</b> unsolvables
+                        and <b>{this.state.solSearchStatus.foundSoFar}</b> solutions so far.
                     </p>
                 </div>
             )
@@ -374,7 +410,7 @@ class App extends Component {
             solutionsDisplay = (
                 <div>
                     <p className="red-text">
-                        Error searching board solutions.<br/>
+                        Error searching board solutions.<br />
                         Please try again.
                     </p>
                 </div>
@@ -385,9 +421,9 @@ class App extends Component {
         // is not being generated.
         let boardStatusLine = (
             <div>
-              <p style={{ color: 'gray' }}>Board Status: <b>{this.boardStatusFromState()}</b></p>
+                <p style={{ color: 'gray' }}>Board Status: <b>{this.boardStatusFromState()}</b></p>
             </div>
-          );
+        );
         if (this.state.genStatus.generating) {
             boardStatusLine = <div>&nbsp;</div>;
         }
@@ -404,9 +440,10 @@ class App extends Component {
                         <div className="row">
                             <GenerationPanel
                                 enabled={!this.state.genStatus.generating &&
-                                         !this.state.solSearchStatus.searching}
+                                    !this.state.solSearchStatus.searching}
                                 onLevelSelected={this.onLevelSelected}
-                                onGenerateBoard={this.onGenerateBoard} />
+                                onGenerateBoard={this.onGenerateBoard}
+                                onClearBoard={this.onClearBoard} />
                         </div>
                         {boardDisplay}
                         {boardStatusLine}
@@ -415,10 +452,10 @@ class App extends Component {
                         <div className="row">
                             <FindSolutionsPanel
                                 enabled={!this.state.genStatus.generating &&
-                                         !this.state.solSearchStatus.searching &&
-                                         this.state.board.isValid &&
-                                         !this.state.board.isComplete &&
-                                         !this.state.board.isEmpty}
+                                    !this.state.solSearchStatus.searching &&
+                                    this.state.board.isValid &&
+                                    !this.state.board.isComplete &&
+                                    !this.state.board.isEmpty}
                                 searching={this.state.solSearchStatus.searching}
                                 onSearchSolutions={this.onSearchSolutions}
                                 onCancelSearch={this.onCancelSearch} />
@@ -435,7 +472,8 @@ class App extends Component {
                 </div>
                 <div className="row">
                     <div style={{ color: 'gray' }} className="col s12 smaller">
-                        Created by Raul Costa Junior. Source code available at <a href="http://github.com/raulcostajunior/react_sudoku">Github</a>.
+                        Display limited to 50 solutions for boards that are not Sudoku Puzzles (boards with no read-only positions).<br />
+                        Source code available at <a href="http://github.com/raulcostajunior/react_sudoku">Github</a>.
                     </div>
                 </div>
             </div >
