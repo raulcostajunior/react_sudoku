@@ -6,7 +6,7 @@ import FindSolutionsPanel from './components/FindSolutionsPanel';
 import GenerationPanel from './components/GenerationPanel';
 import SolutionsPanel from './components/SolutionsPanel';
 
-const API_BASE_URL = 'http://api-sudoku.herokuapp.com';
+const API_BASE_URL = 'http://api-sudoku.syncrun.online';
 
 class App extends Component {
 
@@ -198,7 +198,7 @@ class App extends Component {
                 });
             } else {
                 // Request submitted successfully - start polling searching progress.
-                this.pollSolutionSearching(resp.headers.location);
+                this.pollSolutionSearching(API_BASE_URL + resp.headers.location);
             }
         });
     }
@@ -301,7 +301,7 @@ class App extends Component {
                 });
             } else {
                 // Generation request submitted successfully - start polling generation progress.
-                this.pollBoardGeneration(resp.headers.location);
+                this.pollBoardGeneration(API_BASE_URL + resp.headers.location);
             }
         });
     }
